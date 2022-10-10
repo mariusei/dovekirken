@@ -1,5 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
-import faunadb, { query as q } from "faunadb"
+//import faunadb, { query as q } from "faunadb";
+import faunadb from "faunadb";
+const q = faunadb.query;
 import { FAUNADB_SECRET, FAUNADB_ENDPOINT } from '$env/static/private';
 
 type MyErr = string
