@@ -2,22 +2,38 @@
     import type { PageData, ActionData } from './$types';
     import { readable } from 'svelte/store';
 	import { enhance } from '$app/forms';
+    import { user } from '../../store';
 
     export let data: PageData;
     export let form: ActionData;
 
-    //console.log(data);
+    console.log(data);
+    console.log(form)
 
     //$: res = readable(data.res);
     //$: err = readable(data.err)
 
+    $: formRes = readable(form)
+
+    if (formRes?.user) {
+        console.log("Writing to store!", formRes.user)
+        user.set(
+            formRes.user
+        )
+    }
+
 </script>
-{#if data.res}
-    <h1>Hei {data.res.name}!</h1>
-    <p>E-post: {data.res.email}</p>
+
+{#if data.user}
+    <h1>Hei {data.user.res.name}!</h1>
+    <p>E-post: {data.user.res.email}</p>
 {/if}
 {#if data.err}
     <p>Error: {data.err}</p>
+{/if}
+
+{#if data.token}
+<p>Du er logget inn</p>
 {/if}
 
 <form method="POST" action="?/check" use:enhance>

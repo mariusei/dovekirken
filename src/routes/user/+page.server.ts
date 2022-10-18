@@ -11,9 +11,14 @@ import { invalid } from '@sveltejs/kit';
 
 type MyErr = string
 
+interface User {
+    email: string,
+    token: string
+}
+
 interface Result {
     res?: any,
-    err?: string
+    err?: string, 
 }
 
 type FaunaDoc = {
@@ -53,25 +58,28 @@ function dbClient(): faunadb.Client | undefined {
 
 const client = dbClient();
 
-/////
+/// 1 SEND EMAIL
 
 
 /*  Checks DB to see if user is among the 
     authorized ones
 */
-async function verifyUser(email: String): Promise<Boolean> {
+async function verifyUser(email: string): Promise<Boolean> {
     console.log("in verifyUser", email, email==="test@test.com")
     if (email === "test@test.com") return true
     
     return false
 }
 
-function generateToken(): String {
+function generateToken(): string {
     //return crypto.randomUUID();
     return uuidv4();
 }
 
-async function addTokenToDB(email: String, token: String): Promise<Result> {
+async function addTokenToDB(
+    email: string, 
+    token: string, 
+    collection: string): Promise<Result> {
 
     let out: Result = {}
 
@@ -83,7 +91,7 @@ async function addTokenToDB(email: String, token: String): Promise<Result> {
     try {
         const ret = await client.query(
             q.Create(
-                q.Collection("userEmailTokens"),
+                q.Collection(collection),
                 {
                     data: {
                         "email": email,
@@ -112,7 +120,7 @@ async function addTokenToDB(email: String, token: String): Promise<Result> {
  * @param email 
  * @returns magic link 
  */
-async function sendMagicLink(email: String): Promise<Result> {
+async function sendMagicLink(email: string): Promise<Result> {
 
     console.log("In sendMagicLink")
 
@@ -128,7 +136,8 @@ async function sendMagicLink(email: String): Promise<Result> {
     // Add valid expiring token to DB associated with user
     const addTokenRes = await addTokenToDB(
         email,
-        generateToken()
+        generateToken(),
+        "userEmailTokens"
     )
 
     if (addTokenRes.err) {
@@ -146,9 +155,9 @@ async function sendMagicLink(email: String): Promise<Result> {
 }
 
 
-////
+//// 2 VERIFY E-MAIL TOKEN
 
-async function verifyEmailToken(token: String) {
+async function verifyEmailToken(token: string) {
     const out: Result = {}
 
     if (!client) {
@@ -158,10 +167,37 @@ async function verifyEmailToken(token: String) {
 
     try {
         const ret = await client.query(
-            q.IsNonEmpty(q.Match("ixEmailTokens", token))
+            q.Get(q.Match("ixEmailTokens", token))
         )
 
-        console.log("verify email token response:", ret)
+        out.res = ret
+
+    } catch (err) {
+        const emsg = 
+            `Error: ` +
+            `[${err.name}] ${err.message}: ${err.errors()[0].description}`
+        console.error(emsg)
+        out.err = emsg
+    }
+
+    return out
+}
+
+async function deleteEmailToken(token: string) {
+    const out: Result = {}
+
+    if (!client) {
+        out.err = "No DB connection";
+        return out
+    }
+
+    try {
+        const ret = await client.query(
+            q.Map(
+                q.Paginate(q.Match("ixEmailTokens", token)), 
+                q.Delete)
+        )
+
         out.res = ret
 
     } catch (err) {
@@ -215,7 +251,16 @@ async function getUser() {
 }
 
 export const load: PageServerLoad = ({ cookies }) => {
-    return getUser();
+    // Verify user token
+
+    // Return - user from DB
+    // - user auth
+    return {
+        user: getUser(),
+        email: cookies.get("email"),
+        token: cookies.get("token")
+    }
+
 }
 
 export const actions: Actions = {
@@ -249,17 +294,38 @@ export const actions: Actions = {
 
         if (isValidToken.err) return {err: isValidToken.err}
         if (!isValidToken.res) return {err: "invalid token"}
-        if (isValidToken.res) {
-            // Delete  it
 
-            // Create a new session token
-            cookies.set("auth", emailToken)
+        // Retrieve user e-mail
+        const email = isValidToken.res.data.email
 
-            // return session token to store
+        // Delete the token from the e-mail
+        
+        const deletedToken = await deleteEmailToken(String(emailToken))
 
-            return {
-                status: "valid token"
-            }
+        if (deletedToken.err) return {err: deletedToken.err}
+        if (!deletedToken.res) return {err: "token didn't exist"}
+
+        // Create new browser token
+
+        const newToken = generateToken()
+        const addedSessionToken = await addTokenToDB(
+            email,
+            newToken,
+            "userTokens"
+        )
+
+        // Create a new session token
+        cookies.set("token", newToken)
+        cookies.set("email", email)
+
+        // return session token to store
+
+        return {
+            status: "Authenticated",
+            //user: {
+            //    email: email,
+            //    token: newToken
+            //}
         }
 
 
