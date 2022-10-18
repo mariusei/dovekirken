@@ -1,6 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 
-import crypto from 'crypto';
+//import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 //import faunadb, { query as q } from "faunadb";
 import faunadb from "faunadb";
 
@@ -66,7 +67,8 @@ async function verifyUser(email: String): Promise<Boolean> {
 }
 
 function generateToken(): String {
-    return crypto.randomUUID();
+    //return crypto.randomUUID();
+    return uuidv4();
 }
 
 async function addTokenToDB(email: String, token: String): Promise<Result> {
