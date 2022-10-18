@@ -35,5 +35,8 @@
 	"type": "module",
 	"dependencies": {
 		"faunadb": "^4.7.0"
-	}
+	},
+        "browser": {
+            "crypto": false
+        }
 }
