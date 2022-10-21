@@ -25,8 +25,8 @@
 </script>
 
 {#if data.user}
-    <h1>Hei {data.user.res.name}!</h1>
-    <p>E-post: {data.user.res.email}</p>
+    <h1>Hei {data.user.name}!</h1>
+    <p>E-post: {data.user.email}</p>
 {/if}
 {#if data.err}
     <p>Error: {data.err}</p>
@@ -41,25 +41,24 @@
         E-mail
         <input type="email" name="email" />
     </label>
+    <label>
+        <input type="radio" name="emoji" id="1" value="😀">
+        😀
+    </label>
+    <label>
+        <input type="radio" name="emoji" id="2" value="😊">
+        😊
+    </label>
+    <label>
+        <input type="radio" name="emoji" id="3" value="🤠">
+        🤠
+    </label>
     <button 
         data-key="enter"
         formaction="?/check"
         name="send"
     >Send inn</button>
 
-
-</form>
-
-<form method="POST" action="?/followLink" use:enhance>
-    <label>
-        Token from e-mail:
-        <input type="text" name="emailToken" />
-    </label>
-    <button 
-        data-key="enter"
-        formaction="?/followLink"
-        name="send"
-    >Send inn</button>
 
 </form>
 

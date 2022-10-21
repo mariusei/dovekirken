@@ -1,126 +1,18 @@
 import type { PageServerLoad, Actions } from './$types';
-
-//import crypto from 'crypto';
-import { v4 as uuidv4 } from 'uuid';
-//import faunadb, { query as q } from "faunadb";
-import faunadb from "faunadb";
-
-const q = faunadb.query;
-import { FAUNADB_SECRET, FAUNADB_ENDPOINT } from '$env/static/private';
 import { invalid } from '@sveltejs/kit';
 
-type MyErr = string
+import nodemailer from 'nodemailer';
+import { APP_HOSTNAME, EMAIL_SERVER, EMAIL_PORT, EMAIL_SECURE } from '$env/static/private';
 
-interface User {
-    email: string,
-    token: string
-}
+import { client, q } from '$lib/db'
+import type { Result, FaunaDoc } from '$lib/types';
 
-interface Result {
-    res?: any,
-    err?: string, 
-}
-
-type FaunaDoc = {
-    document: { ref: any, ts: number, data: object }
-}
-
-
-function dbClient(): faunadb.Client | undefined {
-    if (FAUNADB_SECRET !== undefined && FAUNADB_ENDPOINT !== undefined) {
-
-        const secret = FAUNADB_SECRET;
-        const endpoint = FAUNADB_ENDPOINT;
-
-        type Scheme = "http" | "https"
-        //var mg, domain, port: number, scheme: Scheme
-        var mg = endpoint.match(/^(https?):\/\/([^:]+)(:(\d+))?/)
-        if (!mg) {
-            mg = ["", "https", "db.fauna.com", "", "443"]
-        }
-
-        const scheme: Scheme = <Scheme>mg[1]
-        const domain: string = mg[2]
-        const port: number = Number(mg[4])
-        
-        return new faunadb.Client({
-            secret: secret,
-            domain: domain,
-            port: port,
-            scheme: scheme,
-        })
-
-    } else {
-        
-        return undefined
-    }
-}
-
-const client = dbClient();
+import {verifyUser, addTokenToDB, generateToken} from '$lib/auth'
+import {verifyToken, deleteEmailToken} from '$lib/auth'
 
 /// 1 SEND EMAIL
 
-
-/*  Checks DB to see if user is among the 
-    authorized ones
-*/
-async function verifyUser(email: string): Promise<Boolean> {
-    console.log("in verifyUser", email, email==="test@test.com")
-    if (email === "test@test.com") return true
-    
-    return false
-}
-
-function generateToken(): string {
-    //return crypto.randomUUID();
-    return uuidv4();
-}
-
-async function addTokenToDB(
-    email: string, 
-    token: string, 
-    collection: string): Promise<Result> {
-
-    let out: Result = {}
-
-    if (!client) {
-        out.err = "No DB connection";
-        return out
-    }
-
-    try {
-        const ret = await client.query(
-            q.Create(
-                q.Collection(collection),
-                {
-                    data: {
-                        "email": email,
-                        "token": token
-                    }
-                }
-            )
-        )
-
-        out.res = ret
-
-    } catch (err) {
-        const emsg = 
-            `Error: ` +
-            `[${err.name}] ${err.message}: ${err.errors()[0].description}`
-        console.error(emsg)
-        out.err = emsg
-    }
-
-    return out
-
-}
-
-/**
- * Sends magic link to authorized users
- * @param email 
- * @returns magic link 
- */
-async function sendMagicLink(email: string): Promise<Result> {
+async function sendMagicLink(email: string, emoji: string): Promise<Result> {
 
     console.log("In sendMagicLink")
 
@@ -133,12 +25,16 @@ async function sendMagicLink(email: string): Promise<Result> {
         return out
     }
 
+    // Generate unique token that is associated with e-mail magic link
+    const token = generateToken()
+
     // Add valid expiring token to DB associated with user
-    const addTokenRes = await addTokenToDB(
+    const addTokenRes = await addTokenToDB({
         email,
-        generateToken(),
-        "userEmailTokens"
-    )
+        token,
+        collection: "userEmailTokens",
+        emoji: emoji,
+    })
 
     if (addTokenRes.err) {
         console.error("ERROR!!", addTokenRes.err)
@@ -147,7 +43,43 @@ async function sendMagicLink(email: string): Promise<Result> {
     }
 
     // Send e-mail to user setting this token as a cookie
-    out.res = "Email sent"
+
+    console.log("EMAIL", EMAIL_SERVER)
+
+    let testAccount = await nodemailer.createTestAccount()
+    console.log('GOT HERE EMAIL')
+    console.log("IS BOOLEAN?", "string:", EMAIL_SECURE, Boolean(EMAIL_SECURE))
+    let transporter = nodemailer.createTransport({
+        host: EMAIL_SERVER,
+        port: EMAIL_PORT,
+        secure: EMAIL_SECURE === 'true',
+        auth: {
+            user: testAccount.user,
+            pass: testAccount.pass,
+        },
+        tls: {
+            ciphers: 'SSLv3'
+        }
+    })
+
+    console.log("GOT HERE AGAIN")
+
+    let emailMsg = await transporter.sendMail({
+        from: "'DK Test Server' <mariusbe+@gmail.com>",
+        to: "mariusbe@gmail.com",
+        subject: "DK Innlogging",
+        html: `
+        <h1>Innlogging</h1> 
+        <p>Logg inn med linken i e-posten her og velg smileyen du valgte</p>
+        <p><a href='${APP_HOSTNAME}/user/login?auth=${token}'>Link</a></p>
+        `
+    })
+
+    //console.log("Melding sendt", emailMsg.messageId)
+    //console.log("Melding preview", nodemailer.getTestMessageUrl(emailMsg))
+
+
+    out.res = "Email sent: " + nodemailer.getTestMessageUrl(emailMsg)
 
     return out
 
@@ -156,60 +88,6 @@ async function sendMagicLink(email: string): Promise<Result> {
 
 
 //// 2 VERIFY E-MAIL TOKEN
-
-async function verifyEmailToken(token: string) {
-    const out: Result = {}
-
-    if (!client) {
-        out.err = "No DB connection";
-        return out
-    }
-
-    try {
-        const ret = await client.query(
-            q.Get(q.Match("ixEmailTokens", token))
-        )
-
-        out.res = ret
-
-    } catch (err) {
-        const emsg = 
-            `Error: ` +
-            `[${err.name}] ${err.message}: ${err.errors()[0].description}`
-        console.error(emsg)
-        out.err = emsg
-    }
-
-    return out
-}
-
-async function deleteEmailToken(token: string) {
-    const out: Result = {}
-
-    if (!client) {
-        out.err = "No DB connection";
-        return out
-    }
-
-    try {
-        const ret = await client.query(
-            q.Map(
-                q.Paginate(q.Match("ixEmailTokens", token)), 
-                q.Delete)
-        )
-
-        out.res = ret
-
-    } catch (err) {
-        const emsg = 
-            `Error: ` +
-            `[${err.name}] ${err.message}: ${err.errors()[0].description}`
-        console.error(emsg)
-        out.err = emsg
-    }
-
-    return out
-}
 
 ////
 
@@ -250,15 +128,12 @@ async function getUser() {
 
 }
 
-export const load: PageServerLoad = ({ cookies }) => {
-    // Verify user token
+export const load: PageServerLoad = ({ locals, cookies }) => {
 
-    // Return - user from DB
-    // - user auth
+    // Server hook ensures that user data is available throughout
+
     return {
-        user: getUser(),
-        email: cookies.get("email"),
-        token: cookies.get("token")
+        user: locals.user,
     }
 
 }
@@ -269,11 +144,15 @@ export const actions: Actions = {
     check: async ({ request, cookies }) => {
         const data = await request.formData();
         const email = data.get('email')
+        const emoji = data.get('emoji')
 
         if (!email) return { err: "E-mail can't be empty" }
+        if (!emoji) return { err: "Emoji can't be empty" }
 
         if (email) {
-            const out = await sendMagicLink(String(email))
+            const out = await sendMagicLink(
+                String(email),
+                String(emoji))
 
             if (out.err) {
                 return invalid(500, {err : out.err})
@@ -283,53 +162,5 @@ export const actions: Actions = {
 
         }
     },
-
-    followLink: async ({ request, cookies }) => {
-        const data = await request.formData()
-        const emailToken = data.get('emailToken')
-
-        if (!emailToken) return { err: "Token field cant be empty" }
-
-        const isValidToken = await verifyEmailToken(String(emailToken))
-
-        if (isValidToken.err) return {err: isValidToken.err}
-        if (!isValidToken.res) return {err: "invalid token"}
-
-        // Retrieve user e-mail
-        const email = isValidToken.res.data.email
-
-        // Delete the token from the e-mail
-        
-        const deletedToken = await deleteEmailToken(String(emailToken))
-
-        if (deletedToken.err) return {err: deletedToken.err}
-        if (!deletedToken.res) return {err: "token didn't exist"}
-
-        // Create new browser token
-
-        const newToken = generateToken()
-        const addedSessionToken = await addTokenToDB(
-            email,
-            newToken,
-            "userTokens"
-        )
-
-        // Create a new session token
-        cookies.set("token", newToken)
-        cookies.set("email", email)
-
-        // return session token to store
-
-        return {
-            status: "Authenticated",
-            //user: {
-            //    email: email,
-            //    token: newToken
-            //}
-        }
-
-
-        console.log("received email token for processing: ", emailToken)
-    }
 
 }
