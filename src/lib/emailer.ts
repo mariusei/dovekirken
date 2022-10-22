@@ -24,17 +24,7 @@ export async function sendMail({
     }: SendMail) {
     const out: Result = {}
 
-    const response = await fetch(
-        EMAIL_SERVER,
-        {
-            method: "POST",
-            headers: new Headers({
-                "Authorization": 'Basic ' + 
-                    Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
-                //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({"Messages": [
+    const uploadData = {"Messages": [
                 {
                 "From": {
                     "Email": fromEmail,
@@ -51,7 +41,22 @@ export async function sendMail({
                 "HTMLPart": msgHtml,
                 "CustomID": customID
                 }
-            ]})
+            ]}
+
+    out.res = JSON.stringify(uploadData)
+    return out
+
+    const response = await fetch(
+        EMAIL_SERVER,
+        {
+            method: "POST",
+            headers: new Headers({
+                "Authorization": 'Basic ' + 
+                    Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
+                //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
+                "Content-Type": "application/json",
+            }),
+            body: JSON.stringify(uploadData)
         }
     )
 
