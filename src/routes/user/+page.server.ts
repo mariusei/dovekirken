@@ -45,27 +45,28 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
 
     // Send e-mail to user setting this token as a cookie
 
-    let emailMsgRes = await sendMail({
-        fromEmail: "mariusbe@gmail.com",
-        fromName: "Marius DK Test Server",
-        toName: "Marius",
-        toEmail: "mariusbe@gmail.com",
-        subject: "DK Innlogging",
-        text: "Din innlogginslink",
-        html: `
-        <h1>Innlogging</h1> 
-        <p>Logg inn med linken i e-posten her og velg smileyen du valgte</p>
-        <p><a href='${APP_HOSTNAME}/user/login?auth=${token}'>Link</a></p>
-        `,
-        customID: "MagicLinkDK"
-    })
+    //let emailMsgRes = await sendMail({
+    //    fromEmail: "mariusbe@gmail.com",
+    //    fromName: "Marius DK Test Server",
+    //    toName: "Marius",
+    //    toEmail: "mariusbe@gmail.com",
+    //    subject: "DK Innlogging",
+    //    text: "Din innlogginslink",
+    //    html: `
+    //    <h1>Innlogging</h1> 
+    //    <p>Logg inn med linken i e-posten her og velg smileyen du valgte</p>
+    //    <p><a href='${APP_HOSTNAME}/user/login?auth=${token}'>Link</a></p>
+    //    `,
+    //    customID: "MagicLinkDK"
+    //})
 
-    //console.log("Melding sendt", emailMsg.messageId)
-    //console.log("Melding preview", nodemailer.getTestMessageUrl(emailMsg))
-    //console.log("in sendMagicLink - await Sendmail done!")
+    ////console.log("Melding sendt", emailMsg.messageId)
+    ////console.log("Melding preview", nodemailer.getTestMessageUrl(emailMsg))
+    ////console.log("in sendMagicLink - await Sendmail done!")
 
-    out.err = emailMsgRes.err
-    out.res = emailMsgRes.res.Messages[0].Status
+    //out.err = emailMsgRes.err
+    //out.res = emailMsgRes.res.Messages[0].Status
+    out.res = "test wo sending mail"
 
     return out
 
