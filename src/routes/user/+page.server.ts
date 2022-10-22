@@ -45,8 +45,6 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
 
     // Send e-mail to user setting this token as a cookie
 
-    console.log("GOT HERE SEND EMAIL")
-
     let emailMsgRes = await sendMail({
         fromEmail: "mariusbe@gmail.com",
         fromName: "Marius DK Test Server",
@@ -64,9 +62,10 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
 
     //console.log("Melding sendt", emailMsg.messageId)
     //console.log("Melding preview", nodemailer.getTestMessageUrl(emailMsg))
+    //console.log("in sendMagicLink - await Sendmail done!")
 
     out.err = emailMsgRes.err
-    out.res = emailMsgRes.res
+    out.res = emailMsgRes.res.Messages[0].Status
 
     return out
 

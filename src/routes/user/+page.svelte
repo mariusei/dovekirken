@@ -13,15 +13,6 @@
     //$: res = readable(data.res);
     //$: err = readable(data.err)
 
-    $: formRes = readable(form)
-
-    if (formRes?.user) {
-        console.log("Writing to store!", formRes.user)
-        user.set(
-            formRes.user
-        )
-    }
-
 </script>
 
 {#if data.user}
@@ -49,9 +40,6 @@
             </label>
         {/each}
         <button 
-            data-key="enter"
-            formaction="?/check"
-            name="send"
         >Send inn</button>
     </form>
 {/if}

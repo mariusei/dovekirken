@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
         return out
     }
 
-    console.log("have email and emoji?", isValidToken)
+    //console.log("have email and emoji?", isValidToken)
 
     const emoji = isValidToken.res.data.emoji
     const email = isValidToken.res.data.email

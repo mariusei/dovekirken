@@ -24,15 +24,6 @@ export async function sendMail({
     }: SendMail) {
     const out: Result = {}
 
-    console.log("AUthorization header:",
-                {"Authorization": 'Basic ' + 
-                    Buffer.from(EMAIL_USER, 'utf-8').toString('base64') +
-                    ":" +
-                    Buffer.from(EMAIL_USERKEY, 'utf-8').toString('base64'),
-    }
-    
-    )
-
     const response = await fetch(
         EMAIL_SERVER,
         {
@@ -71,7 +62,7 @@ export async function sendMail({
 
     const data = await response.json()
 
-    console.log(data)
+    //console.log(data)
 
     out.res = data
     
