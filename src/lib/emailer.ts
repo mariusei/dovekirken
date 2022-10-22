@@ -25,34 +25,35 @@ export async function sendMail({
     const out: Result = {}
 
     const response = await fetch(
-        EMAIL_SERVER,
-        {
-            method: "POST",
-            headers: new Headers({
-                "Authorization": 'Basic ' + 
-                    Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
-                //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({"Messages": [
-                {
-                "From": {
-                    "Email": fromEmail,
-                    "Name": fromName,
-                },
-                "To": [
-                    {
-                    "Email": toEmail,
-                    "Name": toName,
-                    }
-                ],
-                "Subject": subject,
-                "TextPart": text,
-                "HTMLPart": html,
-                "CustomID": customID
-                }
-            ]})
-        }
+        "http://example.com/"
+        //EMAIL_SERVER,
+        //{
+        //    method: "POST",
+        //    headers: new Headers({
+        //        "Authorization": 'Basic ' + 
+        //            Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
+        //        //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
+        //        "Content-Type": "application/json",
+        //    }),
+        //    body: JSON.stringify({"Messages": [
+        //        {
+        //        "From": {
+        //            "Email": fromEmail,
+        //            "Name": fromName,
+        //        },
+        //        "To": [
+        //            {
+        //            "Email": toEmail,
+        //            "Name": toName,
+        //            }
+        //        ],
+        //        "Subject": subject,
+        //        "TextPart": text,
+        //        "HTMLPart": html,
+        //        "CustomID": customID
+        //        }
+        //    ]})
+        //}
     )
 
     if (!response.ok) {

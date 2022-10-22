@@ -69,7 +69,8 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
         return out
     }
 
-    out.res = emailMsgRes.res.Messages[0].Status
+    //out.res = emailMsgRes.res.Messages[0].Status
+    out.res = String(emailMsgRes.res)
 
     return out
 
