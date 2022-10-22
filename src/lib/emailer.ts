@@ -36,24 +36,25 @@ export async function sendMail({
                 //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
                 "Content-Type": "application/json",
             }),
-            body: JSON.stringify({"Messages": [
-                {
-                "From": {
-                    "Email": fromEmail,
-                    "Name": fromName,
-                },
-                "To": [
-                    {
-                    "Email": toEmail,
-                    "Name": toName,
-                    }
-                ],
-                "Subject": subject,
-                "TextPart": text,
-                "HTMLPart": html,
-                "CustomID": customID
-                }
-            ]})
+            body: "invalid",
+            //body: JSON.stringify({"Messages": [
+            //    {
+            //    "From": {
+            //        "Email": fromEmail,
+            //        "Name": fromName,
+            //    },
+            //    "To": [
+            //        {
+            //        "Email": toEmail,
+            //        "Name": toName,
+            //        }
+            //    ],
+            //    "Subject": subject,
+            //    "TextPart": text,
+            //    "HTMLPart": html,
+            //    "CustomID": customID
+            //    }
+            //]})
         }
     )
 
