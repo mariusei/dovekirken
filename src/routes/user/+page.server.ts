@@ -51,8 +51,8 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
         toName: "Marius",
         toEmail: "mariusbe@gmail.com",
         subject: "DK Innlogging",
-        text: "Din innlogginslink",
-        html: `
+        msgText: "Din innlogginslink",
+        msgHtml: `
         <h1>Innlogging</h1> 
         <p>Logg inn med linken i e-posten her og velg smileyen du valgte</p>
         <p><a href='${APP_HOSTNAME}/user/login?auth=${token}'>Link</a></p>
