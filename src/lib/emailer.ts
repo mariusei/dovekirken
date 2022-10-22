@@ -29,32 +29,29 @@ export async function sendMail({
         {
             method: "POST",
             headers: new Headers({
-                "Authorization": 
-                    'Basic ' + 
-                    //Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
-                    'DEBUG_INVALIDAUTHKEY=',
+                "Authorization": 'Basic ' + 
+                    Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
                 //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
                 "Content-Type": "application/json",
             }),
-            body: "invalid",
-            //body: JSON.stringify({"Messages": [
-            //    {
-            //    "From": {
-            //        "Email": fromEmail,
-            //        "Name": fromName,
-            //    },
-            //    "To": [
-            //        {
-            //        "Email": toEmail,
-            //        "Name": toName,
-            //        }
-            //    ],
-            //    "Subject": subject,
-            //    "TextPart": text,
-            //    "HTMLPart": html,
-            //    "CustomID": customID
-            //    }
-            //]})
+            body: JSON.stringify({"Messages": [
+                {
+                "From": {
+                    "Email": fromEmail,
+                    "Name": fromName,
+                },
+                "To": [
+                    {
+                    "Email": toEmail,
+                    "Name": toName,
+                    }
+                ],
+                "Subject": subject,
+                "TextPart": text,
+                "HTMLPart": html,
+                "CustomID": customID
+                }
+            ]})
         }
     )
 
@@ -63,11 +60,15 @@ export async function sendMail({
         return out
     }
 
-    const data = await response.json()
+    try {
+        const data = await response.json()
+        out.res = data
+    } catch (error) {
+        out.err = "E-mail result parsing failure: " + String(error)
+        return out
+    }
 
     //console.log(data)
-
-    out.res = data
     
     return out
 

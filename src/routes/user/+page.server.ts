@@ -64,9 +64,12 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
     //console.log("Melding preview", nodemailer.getTestMessageUrl(emailMsg))
     //console.log("in sendMagicLink - await Sendmail done!")
 
-    out.err = emailMsgRes.err
+    if (emailMsgRes.err) {
+        out.err = emailMsgRes.err
+        return out
+    }
+
     out.res = emailMsgRes.res.Messages[0].Status
-    out.res = "test wo sending mail"
 
     return out
 
