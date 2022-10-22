@@ -128,10 +128,11 @@ export const load: PageServerLoad = ({ locals, cookies }) => {
 export const actions: Actions = {
     // Checks email
 
-    check: async ({ request, cookies }) => {
-        //const data = await request.formData();
-        //const email = data.get('email')
-        //const emoji = data.get('emoji')
+    //check: async ({ request, cookies }) => {
+    check: async ({ request }) => {
+        const data = await request.formData();
+        const email = data.get('email')
+        const emoji = data.get('emoji')
 
         //if (!email) return { err: "E-mail can't be empty" }
         //if (!emoji) return { err: "Emoji can't be empty" }
@@ -148,6 +149,9 @@ export const actions: Actions = {
         //    return {status: out.res, err: out.err}
 
         //}
+
+        //console.log("request:", request)
+
         return {status: "test status", err: "test error"}
     },
 
