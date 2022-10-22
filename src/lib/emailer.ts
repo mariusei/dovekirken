@@ -1,3 +1,5 @@
+import base64 from 'base-64';
+
 import type { Result } from "$lib/types";
 import { EMAIL_SERVER, EMAIL_USER, EMAIL_USERKEY } from "$env/static/private";
 
@@ -50,9 +52,9 @@ export async function sendMail({
             {
                 method: "POST",
                 headers: new Headers({
-                    "Authorization": 'Basic ' + 
-                        Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
-                    //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
+                    //"Authorization": 'Basic ' + 
+                    //    Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
+                    "Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
                     "Content-Type": "application/json",
                 }),
                 body: JSON.stringify(uploadData)
@@ -71,7 +73,7 @@ export async function sendMail({
             out.err = "E-mail result parsing failure: " + String(error)
             return out
         }
-        
+
     } catch (error) {
         out.err = "Failed calling e-mail API: " + String(error)
         return out
