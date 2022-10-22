@@ -129,25 +129,26 @@ export const actions: Actions = {
     // Checks email
 
     check: async ({ request, cookies }) => {
-        const data = await request.formData();
-        const email = data.get('email')
-        const emoji = data.get('emoji')
+        //const data = await request.formData();
+        //const email = data.get('email')
+        //const emoji = data.get('emoji')
 
-        if (!email) return { err: "E-mail can't be empty" }
-        if (!emoji) return { err: "Emoji can't be empty" }
+        //if (!email) return { err: "E-mail can't be empty" }
+        //if (!emoji) return { err: "Emoji can't be empty" }
 
-        if (email) {
-            const out = await sendMagicLink(
-                String(email),
-                String(emoji))
+        //if (email) {
+        //    const out = await sendMagicLink(
+        //        String(email),
+        //        String(emoji))
 
-            if (out.err) {
-                return invalid(500, {err : out.err})
-            }
+        //    if (out.err) {
+        //        return invalid(500, {err : out.err})
+        //    }
 
-            return {status: out.res, err: out.err}
+        //    return {status: out.res, err: out.err}
 
-        }
+        //}
+        return {status: "test status", err: "test error"}
     },
 
 }
