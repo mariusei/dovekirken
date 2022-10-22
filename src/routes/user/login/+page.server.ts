@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
         return out
     }
 
-    console.log("proceeding to verufy token")
+    //console.log("proceeding to verufy token")
 
     // Verify whether user email token exists
     const isValidToken = await verifyToken(String(auth))
@@ -70,7 +70,7 @@ export const actions: Actions = {
         if (!deletedToken.res) return {err: "token didn't exist"}
 
         // verify user seleceted emoji
-        console.log(isValidToken.res, isValidToken.res.emoji, emojiChosen)
+        //console.log(isValidToken.res, isValidToken.res.emoji, emojiChosen)
         if (!(correctEmoji == emojiChosen)) return {err: "invalid emoji"}
 
         // Retrieve user e-mail

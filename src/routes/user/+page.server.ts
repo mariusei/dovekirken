@@ -134,23 +134,24 @@ export const actions: Actions = {
         const email = data.get('email')
         const emoji = data.get('emoji')
 
-        //if (!email) return { err: "E-mail can't be empty" }
-        //if (!emoji) return { err: "Emoji can't be empty" }
+        if (!email) return { err: "E-mail can't be empty" }
+        if (!emoji) return { err: "Emoji can't be empty" }
 
-        //if (email) {
-        //    const out = await sendMagicLink(
-        //        String(email),
-        //        String(emoji))
+        if (email) {
+            const out = await sendMagicLink(
+                String(email),
+                String(emoji))
 
-        //    if (out.err) {
-        //        return invalid(500, {err : out.err})
-        //    }
+            if (out.err) {
+                //return invalid(500, {err : out.err})
+                return {err: "Send magic link error: " + String(out.err)}
+            }
 
-        //    return {status: out.res, err: out.err}
+            return {status: out.res, err: out.err}
 
-        //}
+        }
 
-        //console.log("request:", request)
+        console.log("request:", request)
 
         return {status: "test status", err: "test error"}
     },
