@@ -15,8 +15,6 @@ import { getRandomEmojis } from '$lib/randEmojis';
 
 async function sendMagicLink(email: string, emoji: string): Promise<Result> {
 
-    console.log("In sendMagicLink")
-
     let out: Result = {}
 
     const isValidUser = await verifyUser(email);
@@ -51,11 +49,14 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
         toName: "Marius",
         toEmail: "mariusbe@gmail.com",
         subject: "DK Innlogging",
-        msgText: "Din innlogginslink",
+        msgText: "Din innlogginslink er ${APP_HOSTNAME}/user/login?auth=${token}",
         msgHtml: `
         <h1>Innlogging</h1> 
         <p>Logg inn med linken i e-posten her og velg smileyen du valgte</p>
         <p><a href='${APP_HOSTNAME}/user/login?auth=${token}'>Link</a></p>
+        <br />
+        <p>Eller kopier og lim inn denne adressen i nettleseren din:</p>
+        <p>${APP_HOSTNAME}/user/login?auth=${token}</p>
         `,
         customID: "MagicLinkDK"
     })
@@ -131,29 +132,41 @@ export const actions: Actions = {
     //check: async ({ request, cookies }) => {
     check: async ({ request }) => {
         const data = await request.formData();
+        if (!data) return { err: "Du må følge linken i e-posten"}
+
         const email = data.get('email')
         const emoji = data.get('emoji')
 
         if (!email) return { err: "E-mail can't be empty" }
         if (!emoji) return { err: "Emoji can't be empty" }
 
-        if (email) {
-            const out = await sendMagicLink(
-                String(email),
-                String(emoji))
+        const out = await sendMagicLink(
+            String(email),
+            String(emoji))
 
-            if (out.err) {
-                //return invalid(500, {err : out.err})
-                return {err: "Send magic link error: " + String(out.err)}
-            }
-
-            return {status: out.res, err: out.err}
-
+        if (out.err) {
+            //return invalid(500, {err : out.err})
+            return {err: "Send magic link error: " + String(out.err)}
         }
 
-        console.log("request:", request)
+        if (out.res === 'success') out.res = "Trykk på linken i e-posten som ble sendt til deg."
 
-        return {status: "test status", err: "test error"}
+        return {status: out.res, err: out.err}
+
     },
 
+    logout: async ({ cookies }) => {
+        //console.log("clicked logout")
+        //cookies.delete('session')
+        cookies.set("session", "", {
+            httpOnly: true,
+            path: '/user',
+            maxAge: 0
+        })
+
+        //return {status: "ok deleted"  + cookies.get("session")}
+    }
+
 }
+
+

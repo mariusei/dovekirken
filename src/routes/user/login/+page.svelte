@@ -10,25 +10,28 @@
 <p>Error - {data.err}</p>
 {/if}
 
-{#if data.res}
-<p>Choose emoji - {data.res.emojis}</p>
-{/if}
-
-{#if data.res}
+{#if data.res.login}
 <form method="POST">
-    <input type="hidden" id="token" name="token" value="{data.res.token}" />
-    {#each data.res.emojis as emoji}
+    <input type="hidden" id="token" name="token" value="{data.res.login.token}" />
+    {#each data.res.login.emojis as emoji}
     <label>
         <input type="radio" name="emoji" id="{emoji}" value="{emoji}">
         {emoji}
     </label>
     {/each}
     <button data-key="enter" formaction="?/check">Sjekk</button>
-
 </form>
 {/if}
 
+{#if data.res.loggedIn}
+<h1>Du er logget inn</h1>
+{/if}
+
 {#if form}
-<p>form data</p>
+{#if form.err}
 <p>{form.err}</p>
+{/if}
+{#if form.status}
+<p>{form.status}</p>
+{/if}
 {/if}

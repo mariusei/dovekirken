@@ -18,13 +18,12 @@
 {#if data.user}
     <h1>Hei {data.user.name}!</h1>
     <p>E-post: {data.user.email}</p>
+    <form action="?/logout" use:enhance>
+        <button type="submit">Logg ut</button>
+    </form>
 {/if}
 {#if data.err}
     <p>Error: {data.err}</p>
-{/if}
-
-{#if data.token}
-<p>Du er logget inn</p>
 {/if}
 
 {#if !data.user}

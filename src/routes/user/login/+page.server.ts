@@ -13,10 +13,21 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
     // User follows login URL
     const auth: String | null = url.searchParams.get("auth")
 
-    if (!auth) {
-        out.err = "Auth not defined"
+    // User is logged in
+    const isLoggedIn = cookies.get("session")
+
+    if (!auth && !isLoggedIn) {
+        out.err = "No valid e-mail token was found, please try again"
         return out
     }
+
+    if (isLoggedIn) {
+        out.res = {loggedIn: "Du er logget inn"}
+        return out
+    }
+
+    // Auth e-mail token was found and user is not signed in
+    // lets verify the user info
 
     //console.log("proceeding to verufy token")
 
@@ -36,9 +47,11 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
     // Return possible emojis for user to choose from
     const emojis = getRandomEmojisAndReplaceOne(3, emoji)
 
-    out.res = {
-        token: String(auth),
-        emojis: emojis
+    out.res = { 
+        login : {
+            token: String(auth),
+            emojis: emojis
+        }
     }
 
     return out
