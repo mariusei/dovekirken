@@ -36,31 +36,25 @@
 <p>Du er logget inn</p>
 {/if}
 
-<form method="POST" action="?/check" use:enhance>
-    <label>
-        E-mail
-        <input type="email" name="email" />
-    </label>
-    <label>
-        <input type="radio" name="emoji" id="1" value="😀">
-        😀
-    </label>
-    <label>
-        <input type="radio" name="emoji" id="2" value="😊">
-        😊
-    </label>
-    <label>
-        <input type="radio" name="emoji" id="3" value="🤠">
-        🤠
-    </label>
-    <button 
-        data-key="enter"
-        formaction="?/check"
-        name="send"
-    >Send inn</button>
-
-
-</form>
+{#if !data.user}
+    <form method="POST" action="?/check" use:enhance>
+        <label>
+            E-mail
+            <input type="email" name="email" />
+        </label>
+        {#each data.emojis as emoji }
+            <label>
+                <input type="radio" name="emoji" value="{emoji}">
+                {emoji}
+            </label>
+        {/each}
+        <button 
+            data-key="enter"
+            formaction="?/check"
+            name="send"
+        >Send inn</button>
+    </form>
+{/if}
 
 {#if form?.status}
     <p>Status: {form?.status}</p>

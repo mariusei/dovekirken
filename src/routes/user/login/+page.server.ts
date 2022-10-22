@@ -3,6 +3,7 @@ import type { Result } from '$lib/types'
 
 import { generateToken, addTokenToDB, verifyToken, deleteEmailToken } from '$lib/auth';
 import { findUserInDb } from "$lib/auth";
+import { getRandomEmojisAndReplaceOne } from "$lib/randEmojis";
 
 
 export const load: PageServerLoad = async ({ cookies, url }) => {
@@ -33,21 +34,11 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
     const email = isValidToken.res.data.email
 
     // Return possible emojis for user to choose from
-    const emojis = ['😍','😋','😐','🤩','😊','😀','😅','😴','😛','🤯','😨','🤠','🥳']
-    // randomize
-    let subset = [...emojis].sort(() => 0.5 - Math.random())
-    // remove correct emoji to prevent duplicates
-    subset.splice(subset.indexOf(emoji), 1)
-    // return 3 emojis to choose from
-    subset = subset.slice(0,3)
-
-    // index that we want user to verify
-    const ix = Math.floor(Math.random()*3)
-    subset[ix] = emoji
+    const emojis = getRandomEmojisAndReplaceOne(3, emoji)
 
     out.res = {
         token: String(auth),
-        emojis: subset
+        emojis: emojis
     }
 
     return out
