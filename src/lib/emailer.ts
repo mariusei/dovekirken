@@ -43,33 +43,37 @@ export async function sendMail({
                 }
             ]}
 
-    out.res = JSON.stringify(uploadData)
-    return out
-
-    const response = await fetch(
-        EMAIL_SERVER,
-        {
-            method: "POST",
-            headers: new Headers({
-                "Authorization": 'Basic ' + 
-                    Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
-                //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify(uploadData)
-        }
-    )
-
-    if (!response.ok) {
-        out.err = "E-mail sending failure: " + response.statusText
-        return out
-    }
 
     try {
-        const data = await response.json()
-        out.res = data
+        const response = await fetch(
+            EMAIL_SERVER,
+            {
+                method: "POST",
+                headers: new Headers({
+                    "Authorization": 'Basic ' + 
+                        Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
+                    //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
+                    "Content-Type": "application/json",
+                }),
+                body: JSON.stringify(uploadData)
+            }
+        )
+
+        if (!response.ok) {
+            out.err = "E-mail sending failure: " + response.statusText
+            return out
+        }
+
+        try {
+            const data = await response.json()
+            out.res = data
+        } catch (error) {
+            out.err = "E-mail result parsing failure: " + String(error)
+            return out
+        }
+        
     } catch (error) {
-        out.err = "E-mail result parsing failure: " + String(error)
+        out.err = "Failed calling e-mail API: " + String(error)
         return out
     }
 
