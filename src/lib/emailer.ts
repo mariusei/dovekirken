@@ -29,8 +29,10 @@ export async function sendMail({
         {
             method: "POST",
             headers: new Headers({
-                "Authorization": 'Basic ' + 
-                    Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
+                "Authorization": 
+                    'Basic ' + 
+                    //Buffer.from(EMAIL_USER + ":" + EMAIL_USERKEY, 'utf-8').toString('base64'),
+                    'DEBUG_INVALIDAUTHKEY=',
                 //"Authorization": `Basic ${base64.encode(`${EMAIL_USER}:${EMAIL_USERKEY}`)}`,
                 "Content-Type": "application/json",
             }),
