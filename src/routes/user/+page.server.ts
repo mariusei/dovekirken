@@ -1,14 +1,15 @@
 import type { PageServerLoad, Actions } from './$types';
 import { invalid } from '@sveltejs/kit';
 
-import nodemailer from 'nodemailer';
-import { APP_HOSTNAME, EMAIL_SERVER, EMAIL_PORT, EMAIL_SECURE } from '$env/static/private';
+import { APP_HOSTNAME } from '$env/static/private';
+import { sendMail } from '$lib/emailer';
 
 import { client, q } from '$lib/db'
 import type { Result, FaunaDoc } from '$lib/types';
 
 import {verifyUser, addTokenToDB, generateToken} from '$lib/auth'
 import {verifyToken, deleteEmailToken} from '$lib/auth'
+import { getRandomEmojis } from '$lib/randEmojis';
 
 /// 1 SEND EMAIL
 
@@ -44,42 +45,28 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
 
     // Send e-mail to user setting this token as a cookie
 
-    console.log("EMAIL", EMAIL_SERVER)
+    console.log("GOT HERE SEND EMAIL")
 
-    let testAccount = await nodemailer.createTestAccount()
-    console.log('GOT HERE EMAIL')
-    console.log("IS BOOLEAN?", "string:", EMAIL_SECURE, Boolean(EMAIL_SECURE))
-    let transporter = nodemailer.createTransport({
-        host: EMAIL_SERVER,
-        port: EMAIL_PORT,
-        secure: EMAIL_SECURE === 'true',
-        auth: {
-            user: testAccount.user,
-            pass: testAccount.pass,
-        },
-        tls: {
-            ciphers: 'SSLv3'
-        }
-    })
-
-    console.log("GOT HERE AGAIN")
-
-    let emailMsg = await transporter.sendMail({
-        from: "'DK Test Server' <mariusbe+@gmail.com>",
-        to: "mariusbe@gmail.com",
+    let emailMsgRes = await sendMail({
+        fromEmail: "mariusbe@gmail.com",
+        fromName: "Marius DK Test Server",
+        toName: "Marius",
+        toEmail: "mariusbe@gmail.com",
         subject: "DK Innlogging",
+        text: "Din innlogginslink",
         html: `
         <h1>Innlogging</h1> 
         <p>Logg inn med linken i e-posten her og velg smileyen du valgte</p>
         <p><a href='${APP_HOSTNAME}/user/login?auth=${token}'>Link</a></p>
-        `
+        `,
+        customID: "MagicLinkDK"
     })
 
     //console.log("Melding sendt", emailMsg.messageId)
     //console.log("Melding preview", nodemailer.getTestMessageUrl(emailMsg))
 
-
-    out.res = "Email sent: " + nodemailer.getTestMessageUrl(emailMsg)
+    out.err = emailMsgRes.err
+    out.res = emailMsgRes.res
 
     return out
 
@@ -134,6 +121,7 @@ export const load: PageServerLoad = ({ locals, cookies }) => {
 
     return {
         user: locals.user,
+        emojis: getRandomEmojis(3)
     }
 
 }
