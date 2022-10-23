@@ -125,7 +125,7 @@ export const actions: Actions = {
 
         if (magicLinkRes.err) {
             //return invalid(500, {err : out.err})
-            out.err = "Send magic link error: " + String(out.err)
+            out.err = "Send magic link error: " + String(magicLinkRes.err)
             return out
         }
 
