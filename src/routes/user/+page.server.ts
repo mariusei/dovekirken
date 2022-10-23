@@ -4,11 +4,11 @@ import { invalid } from '@sveltejs/kit';
 import { APP_HOSTNAME } from '$env/static/private';
 import { sendMail } from '$lib/emailer';
 
-import { client, q } from '$lib/db'
-import type { Result, FaunaDoc } from '$lib/types';
+import { client, q, redis } from '$lib/db'
+import type { Result, GenericResult, User, FaunaDoc } from '$lib/types';
 
 import {verifyUser, addTokenToDB, generateToken} from '$lib/auth'
-import {verifyToken, deleteEmailToken} from '$lib/auth'
+import {verifyToken, deleteToken} from '$lib/auth'
 import { getRandomEmojis } from '$lib/randEmojis';
 
 /// 1 SEND EMAIL
@@ -31,7 +31,7 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
     const addTokenRes = await addTokenToDB({
         email,
         token,
-        collection: "userEmailTokens",
+        collection: "email",
         emoji: emoji,
     })
 
@@ -78,59 +78,38 @@ async function sendMagicLink(email: string, emoji: string): Promise<Result> {
 
 ////
 
-async function getUser() {
-    
-    let out: Result = {}
-
-    if (!client) {
-        out.err = "No DB connection";
-        return out
-    }
-
-    try { 
-        let res: FaunaDoc = await client.query(
-            q.Let(
-            {
-                doc: q.Get(q.Ref(q.Collection('users'), '345094312082538704')),
-            },
-            {
-                document: q.Var('doc')
-            }
-            )
-        )
-        out.res = res.document.data
-    }
-    catch (err) {
-        console.error(
-            'Error: [%s] %s: %s',
-            err.name,
-            err.message,
-            err.errors()[0].description,
-        );
-        out.err = `Error: [${err.name}] ${err.message}: ${err.errors()[0].description}`
-    }
-
-    //console.log("sending out:", out)
-    return out
-
-}
-
-export const load: PageServerLoad = ({ locals, cookies }) => {
+export const load: PageServerLoad = async ({ locals, cookies }) => {
 
     // Server hook ensures that user data is available throughout
+    interface UserPageType {
+        user: User,
+        emojis?: string[],
+    }
 
-    return {
+    const out: GenericResult<string, UserPageType> = {}
+    const myRes: UserPageType = {
         user: locals.user,
         emojis: getRandomEmojis(3)
     }
 
+    out.res = myRes
+
+    return out
+
+
 }
 
+interface TypeAction {
+    currentSessionToken?: string
+    status?: string
+}
 export const actions: Actions = {
     // Checks email
 
     //check: async ({ request, cookies }) => {
     check: async ({ request }) => {
+        const out: GenericResult<string, TypeAction> = {}
+
         const data = await request.formData();
         if (!data) return { err: "Du må følge linken i e-posten"}
 
@@ -140,31 +119,41 @@ export const actions: Actions = {
         if (!email) return { err: "E-mail can't be empty" }
         if (!emoji) return { err: "Emoji can't be empty" }
 
-        const out = await sendMagicLink(
+        const magicLinkRes = await sendMagicLink(
             String(email),
             String(emoji))
 
-        if (out.err) {
+        if (magicLinkRes.err) {
             //return invalid(500, {err : out.err})
-            return {err: "Send magic link error: " + String(out.err)}
+            out.err = "Send magic link error: " + String(out.err)
+            return out
         }
 
-        if (out.res === 'success') out.res = "Trykk på linken i e-posten som ble sendt til deg."
+        if (magicLinkRes.res === 'success') {
+            out.res = {status: "Trykk på linken i e-posten som ble sendt til deg."}
+        }
 
-        return {status: out.res, err: out.err}
+        return out
 
     },
 
     logout: async ({ cookies }) => {
-        //console.log("clicked logout")
-        //cookies.delete('session')
-        cookies.set("session", "", {
-            httpOnly: true,
-            path: '/user',
-            maxAge: 0
-        })
 
-        //return {status: "ok deleted"  + cookies.get("session")}
+        const out: GenericResult<string,TypeAction> = {}
+
+        const delResult = await deleteToken(cookies.get("session"), "session")
+
+        if (delResult.err) {
+            out.err = "Failed deleting session token: " + delResult.err
+            return out
+        }
+
+        cookies.delete('session')
+
+        out.res = {currentSessionToken: cookies.get("session")}
+
+        return out
+
     }
 
 }

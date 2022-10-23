@@ -4,13 +4,19 @@ export interface Result {
     err?: string, 
 }
 
+export interface GenericResult<K,V> {
+    err?: K
+    res?: V
+}
+
+
 export interface User {
     name?: string,
     email: string,
     location?: string,
     position?: string,
-    accessToLocations?: Array<string>,
-    accessToFunctions?: Array<string>,
+    accessToLocations?: Array<string> | string,
+    accessToFunctions?: Array<string> | string,
 }
 
 export type FaunaDoc = {

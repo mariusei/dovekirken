@@ -3,6 +3,10 @@
 
     export let data: PageData;
     export let form: ActionData;
+    
+
+    // @TODO Ensure that return values are sensible
+    // when user chooses wrong emoji - data.res.login is not defined then
 
 </script>
 
@@ -10,21 +14,23 @@
 <p>Error - {data.err}</p>
 {/if}
 
-{#if data.res.login}
-<form method="POST">
-    <input type="hidden" id="token" name="token" value="{data.res.login.token}" />
-    {#each data.res.login.emojis as emoji}
-    <label>
-        <input type="radio" name="emoji" id="{emoji}" value="{emoji}">
-        {emoji}
-    </label>
-    {/each}
-    <button data-key="enter" formaction="?/check">Sjekk</button>
-</form>
-{/if}
+{#if data.res}
+    {#if data.res.login}
+    <form method="POST">
+        <input type="hidden" id="token" name="token" value="{data.res.login.token}" />
+        {#each data.res.login.emojis as emoji}
+        <label>
+            <input type="radio" name="emoji" id="{emoji}" value="{emoji}">
+            {emoji}
+        </label>
+        {/each}
+        <button data-key="enter" formaction="?/check">Sjekk</button>
+    </form>
+    {/if}
 
-{#if data.res.loggedIn}
-<h1>Du er logget inn</h1>
+    {#if data.res.loggedIn}
+    <h1>Du er logget inn</h1>
+    {/if}
 {/if}
 
 {#if form}
