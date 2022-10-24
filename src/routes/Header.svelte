@@ -1,10 +1,54 @@
 <script>
 	import { page } from '$app/stores';
-	import logo from '$lib/images/svelte-logo.svg';
+	//import logo from '$lib/images/svelte-logo.svg';
 	import github from '$lib/images/github.svg';
+	import logo from '$lib/images/logo-hvit.png'
+
+	import herobg from '$lib/images/smil.jpg'
+
+	import HeroImage from '$lib/HeroImage.svelte';
+
+	import { titleMaster, titlePage, titleSub, pictureMaster } from '../store'
+	import { locations } from '../store'
+
+	import { slide } from 'svelte/transition';
+
+	let visible=true
+
 </script>
 
-<header>
+<header class="flex flex-wrap w-full justify-center">
+	<div class="flex flex-wrap flex-col justify-between w-full lg:w-4/5 lg:flex-row" >
+		<div class="flex justify-center
+			p-6 mx-2 mt-2 lg:my-2 
+			invert
+		">
+			<img class="h-24" src={logo} alt="Dovekirkens logo" />
+		</div>
+		<input class="peer md:hidden" type="checkbox">
+		<ul class="hidden peer-checked:flex md:flex flex-col md:flex-row 
+			lg:w-4/6 md:items-end
+			gap-2 p-2
+			mb-4
+			font-bold
+			"
+		>
+			{#each $locations as {name, color}}
+				<li class="flex flex-auto
+					h-12 p-2 
+					justify-center items-center 
+					rounded-lg
+					{color} border-b-4 border-r-4 active:border-0  border-current
+					">
+					{name}</li>
+			{/each}
+		</ul>
+	</div>
+	<HeroImage 
+		image={herobg}
+		buttons={["test", "Igjen"] }
+	/>
+	<!--
 	<div class="corner">
 		<a href="https://kit.svelte.dev">
 			<img src={logo} alt="SvelteKit" />
@@ -39,8 +83,10 @@
 			<img src={github} alt="GitHub" />
 		</a>
 	</div>
+	-->
 </header>
 
+<!--
 <style>
 	header {
 		display: flex;
@@ -130,3 +176,4 @@
 		color: var(--color-theme-1);
 	}
 </style>
+-->

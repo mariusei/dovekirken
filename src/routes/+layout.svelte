@@ -1,20 +1,24 @@
 <script>
 	import Header from './Header.svelte';
-	import './styles.css';
+	import Footer from './Footer.svelte';
+	//import './styles.css';
+
+	import "../app.css";
 </script>
 
-<div class="app">
+<div class="flex flex-col items-center  min-h-screen">
 	<Header />
 
-	<main>
-		<slot />
+	<main class="grow  w-full lg:w-4/5 lg:my-2">
+		<div class="mx-2 px-2">
+			<slot />
+		</div>
 	</main>
 
-	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-	</footer>
+	<Footer />
 </div>
 
+<!--
 <style>
 	.app {
 		display: flex;
@@ -51,3 +55,4 @@
 		}
 	}
 </style>
+-->
