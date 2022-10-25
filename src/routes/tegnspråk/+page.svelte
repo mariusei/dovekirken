@@ -3,7 +3,7 @@
     import Article from '$lib/Article.svelte'
 
 	import HeroImage from '$lib/HeroImage.svelte';
-	import herobg from '$lib/images/ja.jpg'
+	import herobg from '$lib/images/ja.jpg?w=300;600;1200;2400&format=webp&srcset'
 
     const buttons= [
         {label: "Dikt og poesi"},

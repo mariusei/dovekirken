@@ -5,22 +5,23 @@
 	}
 	export let buttons: ButtonType[]
 	export 	let image = ""
+	//  style="background-image: url(image-set({image}) 3x);
+	//	background-size:cover;  
+	//	background-position: center;
+	//  "
 </script>
 
-<div class="flex flex-col
-		items-center
-		justify-end
+<div class="
+		inline-block relative
 		text-dkint-1
 		rounded-lg
  		w-full
 		h-96
+		overflow-hidden
 		"
-	  style="background-image: url({image});
-		background-size:cover;  
-		background-position: center;
-	  "
 	>
-	<div class="flex flex-col items-center w-full py-8" >
+	<img srcset={image} class="w-full absolute -z-10" />
+	<div class="absolute bottom-0 flex flex-col items-center w-full py-8 z-10" >
 		<ul class="flex flex-wrap justify-center gap-4 text-center text-lg font-semibold">
 			{#each buttons as {label, link}}
 				<li class="shadow-md rounded-lg 

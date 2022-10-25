@@ -5,7 +5,7 @@
 
     import Article from '$lib/Article.svelte'
     import HeroImage from '$lib/HeroImage.svelte';
-	import herobg from '$lib/images/smil.jpg'
+	import herobg from '$lib/images/smil.jpg?w=300;600;1200;2400&format=webp&srcset'
 
 	const heroButtons = [
 		{label: "Tegnspråk", link: "/tegnspråk"}
