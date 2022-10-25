@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	//import logo from '$lib/images/svelte-logo.svg';
 	import github from '$lib/images/github.svg';
-	import logo from '$lib/images/logo-hvit.png'
+	import logo from '$lib/images/logo-dk-svart-3x.png'
 
 	import herobg from '$lib/images/smil.jpg'
 
@@ -18,16 +18,30 @@
 </script>
 
 <header class="flex flex-wrap w-full justify-center">
-	<div class="flex flex-wrap flex-col justify-between w-full lg:w-4/5 lg:flex-row" >
+	<div class="flex flex-wrap flex-col justify-between 
+			w-full lg:w-4/5 lg:flex-row" >
 		<div class="flex justify-center
-			p-6 mx-2 mt-2 lg:my-2 
-			invert
+		mx-2 mt-2 lg:my-2
+		p-2
 		">
-			<img class="h-24" src={logo} alt="Dovekirkens logo" />
+			<a href="/"
+				class="
+					rounded-full
+					bg-dkext-6 md:bg-transparent
+					hover:bg-dkext-6
+					active:ring ring-black
+					p-8 md:-ml-8 -mb-8 md:mb-0 lg:-mb-8
+				"
+			>
+				<img 
+					class="h-24"
+					src={logo} 
+					alt="Dovekirkens logo" />
+			</a>
 		</div>
 		<input class="peer md:hidden" type="checkbox">
 		<ul class="hidden peer-checked:flex md:flex flex-col md:flex-row 
-			lg:w-4/6 md:items-end
+			md:items-end
 			gap-2 p-2
 			mb-4
 			font-bold
@@ -44,10 +58,12 @@
 			{/each}
 		</ul>
 	</div>
+	<!--
 	<HeroImage 
 		image={herobg}
 		buttons={["test", "Igjen"] }
 	/>
+	-->
 	<!--
 	<div class="corner">
 		<a href="https://kit.svelte.dev">

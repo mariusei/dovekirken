@@ -2,6 +2,14 @@
 	import Counter from './Counter.svelte';
 	import welcome from '$lib/images/svelte-welcome.webp';
 	import welcome_fallback from '$lib/images/svelte-welcome.png';
+
+    import Article from '$lib/Article.svelte'
+    import HeroImage from '$lib/HeroImage.svelte';
+	import herobg from '$lib/images/smil.jpg'
+
+	const heroButtons = [
+		{label: "Tegnspråk", link: "/tegnspråk"}
+	]
 </script>
 
 <svelte:head>
@@ -9,24 +17,34 @@
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<section>
-	<h1>
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcome_fallback} alt="Welcome" />
-			</picture>
-		</span>
+<Article>
+	<div slot="hero">
+        <HeroImage 
+            image={herobg}
+            buttons={heroButtons}
+        />
+	</div>
 
-		to your new<br />SvelteKit app
-	</h1>
+	<section slot="content">
+		<h1>
+			<span class="welcome">
+				<picture>
+					<source srcset={welcome} type="image/webp" />
+					<img src={welcome_fallback} alt="Welcome" />
+				</picture>
+			</span>
 
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
+			to your new<br />SvelteKit app
+		</h1>
 
-	<Counter />
-</section>
+		<h2>
+			try editing <strong>src/routes/+page.svelte</strong>
+		</h2>
+
+		<Counter />
+	</section>
+
+</Article>
 
 <style>
 	section {

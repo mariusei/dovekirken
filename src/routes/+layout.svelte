@@ -9,8 +9,8 @@
 <div class="flex flex-col items-center  min-h-screen">
 	<Header />
 
-	<main class="grow  w-full lg:w-4/5 lg:my-2">
-		<div class="mx-2 px-2">
+	<main class="grow w-full">
+		<div class="flex justify-center w-full">
 			<slot />
 		</div>
 	</main>
