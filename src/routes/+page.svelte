@@ -1,7 +1,7 @@
 <script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+	//import Counter from './Counter.svelte';
+	//import welcome from '$lib/images/svelte-welcome.webp';
+	//import welcome_fallback from '$lib/images/svelte-welcome.png';
 
     import Article from '$lib/Article.svelte'
     import HeroImage from '$lib/HeroImage.svelte';
@@ -26,22 +26,7 @@
 	</div>
 
 	<section slot="content">
-		<h1>
-			<span class="welcome">
-				<picture>
-					<source srcset={welcome} type="image/webp" />
-					<img src={welcome_fallback} alt="Welcome" />
-				</picture>
-			</span>
-
-			to your new<br />SvelteKit app
-		</h1>
-
-		<h2>
-			try editing <strong>src/routes/+page.svelte</strong>
-		</h2>
-
-		<Counter />
+		<h1>Test</h1>
 	</section>
 
 </Article>
