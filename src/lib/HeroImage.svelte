@@ -20,7 +20,7 @@
 		overflow-hidden
 		"
 	>
-	<img srcset={image} class="w-full absolute -z-10" />
+	<img srcset={image} class="absolute object-cover min-h-full -z-10" />
 	<div class="absolute bottom-0 flex flex-col items-center w-full py-8 z-10" >
 		<ul class="flex flex-wrap justify-center gap-4 text-center text-lg font-semibold">
 			{#each buttons as {label, link}}
