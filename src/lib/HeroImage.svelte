@@ -3,8 +3,9 @@
 		label: string
 		link?: string
 	}
-	export let buttons: ButtonType[]
-	export 	let image = ""
+	export let buttons: ButtonType[] | undefined
+	export 	let image: string | undefined
+	export let video: string | undefined
 	//  style="background-image: url(image-set({image}) 3x);
 	//	background-size:cover;  
 	//	background-position: center;
@@ -16,13 +17,20 @@
 		text-dkint-1
 		rounded-lg
  		w-full
-		h-96
+		lg:h-96 hover:h-full
 		overflow-hidden
 		"
+		style="transition: height 1s linear;"
 	>
-	<img srcset={image} class="absolute object-cover min-h-full z-0" />
+	{#if image}
+		<img srcset={image} class="object-cover z-0" />
+	{/if}
+	{#if video}
+		<video src={video} class="object-cover w-full z-0" controls></video>
+	{/if}
 	<div class="absolute bottom-0 flex flex-col items-center w-full py-8" >
 		<ul class="flex flex-wrap justify-center gap-4 text-center text-lg font-semibold">
+			{#if buttons}
 			{#each buttons as {label, link}}
 				<li class="shadow-md rounded-lg 
 					border-b-4 border-r-4 border-t border-l 
@@ -42,6 +50,7 @@
 				{/if}
 				</li>
 			{/each}
+			{/if}
 		</ul>
 	</div>
 </div>

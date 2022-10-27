@@ -4,6 +4,7 @@
 	//import welcome_fallback from '$lib/images/svelte-welcome.png';
 
     import Article from '$lib/Article.svelte'
+	import Banner from '$lib/Banner.svelte';
     import HeroImage from '$lib/HeroImage.svelte';
 	import herobg from '$lib/images/smil.jpg?w=300;600;1200;2400&format=webp&srcset'
 
@@ -17,7 +18,7 @@
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<Article>
+<Article heading="Den norske kirke på tegnspråk">
 	<div slot="hero">
         <HeroImage 
             image={herobg}
@@ -25,9 +26,7 @@
         />
 	</div>
 
-	<section slot="content">
-		<h1>Test</h1>
-	</section>
+	<Banner></Banner>
 
 </Article>
 

@@ -10,7 +10,7 @@
 	<Header />
 
 	<main class="grow w-full">
-		<div class="flex justify-center w-full">
+		<div class="flex flex-wrap gap-12 justify-center w-full">
 			<slot />
 		</div>
 	</main>
